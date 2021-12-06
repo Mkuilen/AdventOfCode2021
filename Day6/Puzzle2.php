@@ -14,30 +14,34 @@ foreach ($inputArray as $input) {
 }
 
 echo '<pre>';
-    var_dump($fishes);
+var_dump($fishes);
 echo '</pre>';
 
 for ($days = 0; $days < 256; $days++) {
     foreach ($fishes as $fishIndex => $fish) {
         if($fishIndex == 0){
-            $fishes[6] += $fish;
-            $fishes[8] += $fish;
-            $fishes[0] = 0;
-        }else{
+            $tempFish = $fish;
+        } else {
             $fishes[$fishIndex - 1] = $fish;
+        }
+
+        if ($fishIndex > 7) {
+            $fishes[6] += $tempFish;
+            $fishes[8] = $tempFish;
+            $tempFish = 0;
         }
     }
 }
 
 echo '<pre>';
-    var_dump($fishes);
+var_dump($fishes);
 echo '</pre>';
 
 $totalAmountOfFishes = 0;
-foreach ($fishes as $fish){
+foreach ($fishes as $fish) {
     $totalAmountOfFishes += $fish;
 }
 
 echo '<pre>';
-    var_dump($totalAmountOfFishes);
+var_dump($totalAmountOfFishes);
 echo '</pre>';
