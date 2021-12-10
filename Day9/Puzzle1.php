@@ -1,8 +1,4 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 $input = file_get_contents("../input/Day9.txt");
 
 $inputArray = explode(PHP_EOL, $input);
@@ -15,37 +11,68 @@ foreach ($inputArray as $item) {
 
 $lowestNumbers = array();
 foreach ($heightMap as $heightKey => $height) {
-    foreach ($height as $key => $value) {
-        $compareAgainst = 0;
-        if (isset($height[$key - 1]) && isset($height[$key + 1])) {
-            if ($height[$key - 1] > $value && $height[$key + 1] > $value) {
-                $compareAgainst = $value;
-            }
-        } elseif (!isset($height[$key - 1]) && isset($height[$key + 1])) {
-            if ($height[$key + 1] > $value) {
-                $compareAgainst = $value;
-            }
-        } elseif (isset($height[$key - 1]) && !isset($height[$key + 1])) {
-            if ($height[$key - 1] > $value) {
-                $compareAgainst = $value;
-            }
+    $excludePrevious = array();
+    foreach ($height as $item) {
+        $compare = min(array_diff($height, $excludePrevious));
+        $compareKey = array_keys($height, $compare);
+        $isLowest = array();
+        if($compare === false){
+            continue;
         }
-        if(isset($heightMap[$heightKey - 1]) && isset($heightMap[$heightKey + 1])){
-            if($heightMap[$heightKey - 1] > $compareAgainst && $heightMap[$heightKey + 1] > $compareAgainst){
-                $lowestNumbers[] = $compareAgainst;
+        if (isset($height[$compareKey[0] - 1])) {
+            if ($height[$compareKey[0] - 1] > $compare) {
+                $isLowest[] = true;
+            }else{
+                $isLowest[] = false;
             }
-        }elseif(!isset($heightMap[$heightKey - 1]) && isset($heightMap[$heightKey + 1])){
-            if($heightMap[$heightKey + 1] > $compareAgainst){
-                $lowestNumbers[] = $compareAgainst;
-            }
-        }elseif(isset($heightMap[$heightKey - 1]) && !isset($heightMap[$heightKey + 1])){
-            if($heightMap[$heightKey - 1] > $compareAgainst){
-                $lowestNumbers[] = $compareAgainst;
-            }
+        } else {
+            $isLowest[] = true;
         }
+        if (isset($height[$compareKey[0] + 1])) {
+            if ($height[$compareKey[0] + 1] > $compare) {
+                $isLowest[] = true;
+            }else{
+                $isLowest[] = false;
+            }
+        } else {
+            $isLowest[] = true;
+        }
+        if (isset($heightMap[$heightKey - 1][$compareKey[0]])) {
+            if ($heightMap[$heightKey - 1][$compareKey[0]] > $compare) {
+                $isLowest[] = true;
+            }else{
+                $isLowest[] = false;
+            }
+        } else {
+            $isLowest[] = true;
+        }
+        if (isset($heightMap[$heightKey + 1][$compareKey[0]])) {
+            if ($heightMap[$heightKey + 1][$compareKey[0]] > $compare) {
+                $isLowest[] = true;
+            }else{
+                $isLowest[] = false;
+            }
+        } else {
+            $isLowest[] = true;
+        }
+        if ($isLowest == [true, true, true, true]) {
+            $lowestNumbers[] = $compare;
+            echo '<pre>';
+                var_dump($lowestNumbers);
+            echo '</pre>';
+        }
+        $excludePrevious[] = $compare;
     }
 }
 
-echo "<pre>";
-    var_dump($lowestNumbers);
-echo "</pre>";
+$riskLevel = 0;
+foreach ($lowestNumbers as $key => &$number) {
+    if ($number === false) {
+        unset($lowestNumbers[$key]);
+    }
+    ++$number;
+}
+
+echo '<pre>';
+var_dump(array_sum($lowestNumbers));
+echo '</pre>';
